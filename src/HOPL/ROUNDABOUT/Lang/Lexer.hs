@@ -27,8 +27,18 @@ checkedDef =
       Tok.identLetter = alphaNum <|> oneOf "_-?",
       Tok.reservedOpNames =
         [ "=",
-          "-",
-          "->"
+          "-", -- Arithmetic
+          "+",
+          "*",
+          "/",
+          "-=",
+          "+=",
+          "<", -- Boolean Operations
+          "<=",
+          "==",
+          ">",
+          ">=",
+          "->" -- ? What is this
         ],
       Tok.reservedNames =
         [ "let",
@@ -40,7 +50,9 @@ checkedDef =
           "proc",
           "letrec",
           "int",
-          "bool"
+          "bool",
+          "str",
+          "list" -- Decide whether we need to remove later
         ]
     }
 
