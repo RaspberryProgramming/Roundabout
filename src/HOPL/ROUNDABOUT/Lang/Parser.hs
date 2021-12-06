@@ -8,15 +8,15 @@
  -
  -  Author: Matthew A Johnson
  -}
-module HOPL.CHECKED.Lang.Parser
+module HOPL.ROUNDABOUT.Lang.Parser
   ( parseToplevel,
     ParseError,
   )
 where
 
-import HOPL.CHECKED.Type
-import HOPL.CHECKED.Lang.Lexer
-import HOPL.CHECKED.Lang.Syntax (Exp (..), Pgm (..))
+import HOPL.ROUNDABOUT.Type
+import HOPL.ROUNDABOUT.Lang.Lexer
+import HOPL.ROUNDABOUT.Lang.Syntax (Exp (..), Pgm (..))
 import Text.Parsec (ParseError, choice, eof, many1, parse, sepBy, try)
 import qualified Text.Parsec.Expr as Ex
 import Text.Parsec.String (Parser)

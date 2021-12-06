@@ -8,7 +8,7 @@
  -
  -  Author: Matthew A Johnson
  -}
-module HOPL.CHECKED.Type where
+module HOPL.ROUNDABOUT.Type where
 
 data Type
   = IntType

@@ -8,7 +8,7 @@
  -
  -  Author: Matthew A Johnson
  -}
-module HOPL.CHECKED.Lang.Lexer where
+module HOPL.ROUNDABOUT.Lang.Lexer where
 
 import Text.Parsec ((<|>))
 import Text.Parsec.Char (alphaNum, letter, oneOf)

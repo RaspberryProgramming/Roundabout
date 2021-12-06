@@ -8,13 +8,13 @@
  -
  -  Author: Matthew A Johnson
  -}
-module HOPL.CHECKED.Checker (check, checkWith, parseToplevel, typeOfProgram) where
+module HOPL.ROUNDABOUT.Checker (check, checkWith, parseToplevel, typeOfProgram) where
 
-import HOPL.CHECKED.DataStructures (DenVal, Environment, ExpVal (..), Procedure (..))
-import HOPL.CHECKED.Environment (Env (..))
-import HOPL.CHECKED.Lang.Parser (ParseError, parseToplevel)
-import HOPL.CHECKED.Lang.Syntax (Exp (..), Pgm (..))
-import HOPL.CHECKED.TypeEnv
+import HOPL.ROUNDABOUT.DataStructures (DenVal, Environment, ExpVal (..), Procedure (..))
+import HOPL.ROUNDABOUT.Environment (Env (..))
+import HOPL.ROUNDABOUT.Lang.Parser (ParseError, parseToplevel)
+import HOPL.ROUNDABOUT.Lang.Syntax (Exp (..), Pgm (..))
+import HOPL.ROUNDABOUT.TypeEnv
 import HOPL.Types (Source)
 
 check :: Source -> Either ParseError Pgm

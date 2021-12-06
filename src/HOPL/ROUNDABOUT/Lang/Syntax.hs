@@ -8,9 +8,9 @@
  -
  -  Author: Matthew A Johnson
  -}
-module HOPL.CHECKED.Lang.Syntax where
+module HOPL.ROUNDABOUT.Lang.Syntax where
 
-import HOPL.CHECKED.Type (Type)
+import HOPL.ROUNDABOUT.Type (Type)
 import HOPL.Types (Id)
 
 newtype Pgm

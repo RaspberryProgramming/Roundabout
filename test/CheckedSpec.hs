@@ -11,12 +11,12 @@
 module CheckedSpec (spec) where
 
 import Data.Either (fromRight)
-import HOPL.CHECKED.Checker (checkWith, parseToplevel, typeOfProgram)
-import HOPL.CHECKED.DataStructures (ExpVal (..))
-import HOPL.CHECKED.Environment (Env (emptyEnv, extendEnv'))
-import HOPL.CHECKED.Interp (checkAndInterpWith, interpWith)
-import HOPL.CHECKED.Type (Type (..))
-import HOPL.CHECKED.TypeEnv
+import HOPL.ROUNDABOUT.Checker (checkWith, parseToplevel, typeOfProgram)
+import HOPL.ROUNDABOUT.DataStructures (ExpVal (..))
+import HOPL.ROUNDABOUT.Environment (Env (emptyEnv, extendEnv'))
+import HOPL.ROUNDABOUT.Interp (checkAndInterpWith, interpWith)
+import HOPL.ROUNDABOUT.Type (Type (..))
+import HOPL.ROUNDABOUT.TypeEnv
 import Test.Tasty.Hspec
 
 testEnv =

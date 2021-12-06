@@ -8,7 +8,7 @@
  -
  -  Author: Matthew A Johnson
  -}
-module HOPL.CHECKED.Interp
+module HOPL.ROUNDABOUT.Interp
   ( checkAndInterp,
     checkAndInterpWith,
     interpWith,
@@ -16,12 +16,12 @@ module HOPL.CHECKED.Interp
 where
 
 import Data.Either (fromRight)
-import HOPL.CHECKED.Checker
-import HOPL.CHECKED.DataStructures (DenVal, Environment, ExpVal (..), Procedure (..))
-import HOPL.CHECKED.Environment (Env (..))
-import HOPL.CHECKED.Lang.Parser (ParseError, parseToplevel)
-import HOPL.CHECKED.Lang.Syntax (Exp (..), Pgm (..))
-import HOPL.CHECKED.TypeEnv (TEnv (..), TypeEnvironment)
+import HOPL.ROUNDABOUT.Checker
+import HOPL.ROUNDABOUT.DataStructures (DenVal, Environment, ExpVal (..), Procedure (..))
+import HOPL.ROUNDABOUT.Environment (Env (..))
+import HOPL.ROUNDABOUT.Lang.Parser (ParseError, parseToplevel)
+import HOPL.ROUNDABOUT.Lang.Syntax (Exp (..), Pgm (..))
+import HOPL.ROUNDABOUT.TypeEnv (TEnv (..), TypeEnvironment)
 import HOPL.Types (Source)
 import Prelude hiding (exp)
 

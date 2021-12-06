@@ -9,7 +9,7 @@
  -
  -  Author: Matthew A Johnson
  -}
-module HOPL.CHECKED.DataStructures
+module HOPL.ROUNDABOUT.DataStructures
   ( ExpVal (..),
     DenVal,
     Binding,
@@ -18,7 +18,7 @@ module HOPL.CHECKED.DataStructures
   )
 where
 
-import HOPL.CHECKED.Lang.Syntax (Exp)
+import HOPL.ROUNDABOUT.Lang.Syntax (Exp)
 import HOPL.Types (Id)
 
 -- Denoted values are any expressed value

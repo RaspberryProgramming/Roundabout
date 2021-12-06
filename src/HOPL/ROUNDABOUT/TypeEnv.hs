@@ -9,12 +9,12 @@
  -
  -  Author: Matthew A Johnson
  -}
-module HOPL.CHECKED.TypeEnv (TEnv (..), TypeEnvironment, Type (..)) where
+module HOPL.ROUNDABOUT.TypeEnv (TEnv (..), TypeEnvironment, Type (..)) where
 
 import Data.List
 import Data.Maybe
-import HOPL.CHECKED.DataStructures
-import HOPL.CHECKED.Type
+import HOPL.ROUNDABOUT.DataStructures
+import HOPL.ROUNDABOUT.Type
 import HOPL.Types (Id)
 
 nobinding = error . ("No binding found for \"" ++) . (++ "\"")

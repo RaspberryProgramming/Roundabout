@@ -9,9 +9,9 @@
  -
  -  Author: Matthew A Johnson
  -}
-module HOPL.CHECKED.Environment (Env (..)) where
+module HOPL.ROUNDABOUT.Environment (Env (..)) where
 
-import HOPL.CHECKED.DataStructures (Binding, DenVal, Environment (..), ExpVal (ProcVal), Procedure (..))
+import HOPL.ROUNDABOUT.DataStructures (Binding, DenVal, Environment (..), ExpVal (ProcVal), Procedure (..))
 import HOPL.Types (Id)
 
 {- Interface for an environment (symbol-to-value mapping) -}
