@@ -1,3 +1,4 @@
+# Haskell ignore
 dist
 dist-*
 cabal-dev
@@ -21,3 +22,16 @@ cabal.project.local
 cabal.project.local~
 .HTF/
 .ghc.environment.*
+*~
+
+# General VSCode ignore
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
