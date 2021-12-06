@@ -35,3 +35,4 @@ cabal.project.local~
 # Local History for Visual Studio Code
 .history/
 
+.dccache
