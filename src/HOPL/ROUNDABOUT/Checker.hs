@@ -48,7 +48,43 @@ typeOf (IsZeroExp exp) τ
   | otherwise = reportUnequalTypes IntType t exp
   where
     t = typeOf exp τ
+-- Arithmetic
 typeOf (DiffExp exp₁ exp₂) τ
+  | t₁ /= IntType = reportUnequalTypes IntType t₁ exp₁
+  | t₂ /= IntType = reportUnequalTypes IntType t₂ exp₂
+  | otherwise = IntType
+  where
+    t₁ = typeOf exp₁ τ
+    t₂ = typeOf exp₂ τ
+typeOf (AddExp exp₁ exp₂) τ
+  | t₁ /= IntType = reportUnequalTypes IntType t₁ exp₁
+  | t₂ /= IntType = reportUnequalTypes IntType t₂ exp₂
+  | otherwise = IntType
+  where
+    t₁ = typeOf exp₁ τ
+    t₂ = typeOf exp₂ τ
+typeOf (DivExp exp₁ exp₂) τ
+  | t₁ /= IntType = reportUnequalTypes IntType t₁ exp₁
+  | t₂ /= IntType = reportUnequalTypes IntType t₂ exp₂
+  | otherwise = IntType
+  where
+    t₁ = typeOf exp₁ τ
+    t₂ = typeOf exp₂ τ
+typeOf (MultExp exp₁ exp₂) τ
+  | t₁ /= IntType = reportUnequalTypes IntType t₁ exp₁
+  | t₂ /= IntType = reportUnequalTypes IntType t₂ exp₂
+  | otherwise = IntType
+  where
+    t₁ = typeOf exp₁ τ
+    t₂ = typeOf exp₂ τ
+typeOf (AddAssExp exp₁ exp₂) τ
+  | t₁ /= IntType = reportUnequalTypes IntType t₁ exp₁
+  | t₂ /= IntType = reportUnequalTypes IntType t₂ exp₂
+  | otherwise = IntType
+  where
+    t₁ = typeOf exp₁ τ
+    t₂ = typeOf exp₂ τ
+typeOf (DiffAssExp exp₁ exp₂) τ
   | t₁ /= IntType = reportUnequalTypes IntType t₁ exp₁
   | t₂ /= IntType = reportUnequalTypes IntType t₂ exp₂
   | otherwise = IntType

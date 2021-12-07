@@ -75,6 +75,22 @@ expression =
       DiffExp
         <$> (reservedOp "-" >> symbol "(" >> expression)
         <*> (symbol "," >> expression <* symbol ")"),
+      AddExp
+        <$> (reservedOp "+" >> symbol "(" >> expression)
+        <*> (symbol "," >> expression <* symbol ")"),
+      DivExp
+        <$> (reservedOp "/" >> symbol "(" >> expression)
+        <*> (symbol "," >> expression <* symbol ")"),
+      MultExp
+        <$> (reservedOp "*" >> symbol "(" >> expression)
+        <*> (symbol "," >> expression <* symbol ")"),
+      -- Arith Assignment Expressions
+      AddAssExp
+        <$> (reservedOp "+=" >> symbol "(" >> expression)
+        <*> (symbol "," >> expression <* symbol ")"),
+      DiffAssExp
+        <$> (reservedOp "-=" >> symbol "(" >> expression)
+        <*> (symbol "," >> expression <* symbol ")"),
       -- Arithmetic/numeric predicates
       IsZeroExp
         <$> (reserved "zero?" >> parens expression),
@@ -84,6 +100,15 @@ expression =
       -- Variable reference
       VarExp
         <$> identifier
+      LoopExp
+        <$> (reservedOp "loop" >> expression)
+        <*> (reserved "in" >> expression , expression),
+      BoolExp
+        <$> (expression, operator, expression),  
+      SequenceExp
+        <$> (expression)
+    
+
     ]
 
 typeAnnotation :: Parser Type

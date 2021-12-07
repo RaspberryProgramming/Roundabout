@@ -14,6 +14,9 @@ import Text.ParserCombinators.Parsec.Error (ParseError)
 -- Represent identifiers using a Haskell String
 type Id = String
 
+-- Represent Operator that identifies an operator
+type Op = String
+
 -- Source code is simply a text string
 type Source = String
 

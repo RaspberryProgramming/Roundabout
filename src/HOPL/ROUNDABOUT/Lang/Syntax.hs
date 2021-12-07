@@ -11,7 +11,7 @@
 module HOPL.ROUNDABOUT.Lang.Syntax where
 
 import HOPL.ROUNDABOUT.Type (Type)
-import HOPL.Types (Id)
+import HOPL.Types (Id, Op)
 
 newtype Pgm
   = Pgm Exp
@@ -28,6 +28,11 @@ data Exp
     IsZeroExp Exp
   | -- Arithmetic operators
     DiffExp Exp Exp
+  | AddExp Exp Exp
+  | DivExp Exp Exp
+  | MultExp Exp Exp
+  | AddAssExp Exp Exp
+  | DiffAssExp Exp Exp
   | -- Variable declarations
     LetExp Id Exp Exp
   | LetrecExp Type Id Id Type Exp Exp
@@ -35,6 +40,23 @@ data Exp
     IfExp Exp Exp Exp
   | -- Function definition
     ProcExp Id Type Exp
-  | -- Function call
+  | LoopExp Exp Exp Exp
+  | ArithExp Exp Exp
+  | BoolExp Exp Op Exp
+ -- | CharExp Char
+ -- | IntExp Int
+ -- | StringExp Char Char Char...
+ -- ! | EmptyListExp Type ListVal Type 
+ -- ! | ListExp Type [Exp] Exp Exp
+ -- | listLookupExp Exp Int
+ -- | strLookupExp Exp Int
+ -- | listAssignExp Exp Int
+ -- | strAssignExp Exp Int
+ -- | strConcatExp Exp Exp
+ -- | functExp Type Identifier (Type Identfier,..) Exp
+ -- | SequenceExp [Exp]
+ -- | functCallExp Indentifier [Exp]
+ 
+    -- Function call
     CallExp Exp Exp
   deriving (Eq, Ord, Show)

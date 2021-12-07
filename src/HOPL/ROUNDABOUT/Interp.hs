@@ -63,6 +63,34 @@ valueOf (DiffExp exp₁ exp₂) ρ = NumVal (n₁ - n₂)
   where
     NumVal n₁ = valueOf exp₁ ρ
     NumVal n₂ = valueOf exp₂ ρ
+valueOf (DiffExp exp₁ exp₂) ρ = NumVal (n₁ - n₂)
+  where
+    NumVal n₁ = valueOf exp₁ ρ
+    NumVal n₂ = valueOf exp₂ ρ
+valueOf (AddExp exp₁ exp₂) ρ = NumVal (n₁ + n₂)
+  where
+    NumVal n₁ = valueOf exp₁ ρ
+    NumVal n₂ = valueOf exp₂ ρ
+valueOf (MultExp exp₁ exp₂) ρ = NumVal (n₁ * n₂)
+  where
+    NumVal n₁ = valueOf exp₁ ρ
+    NumVal n₂ = valueOf exp₂ ρ
+valueOf (DivExp exp₁ exp₂) ρ = NumVal (abs (fromIntegral n₁ / fromIntegral n₂))
+  where
+    NumVal n₁ = valueOf exp₁ ρ
+    NumVal n₂ = valueOf exp₂ ρ
+valueOf (DiffAssExp exp₁ exp₂) ρ = NumVal v
+  where
+    NumVal n₁ = valueOf exp₁ ρ
+    NumVal n₂ = valueOf exp₂ ρ
+    v = valueOf (n₁ - n₂) ρ
+    ρ' = extendEnv n₁ ρ
+valueOf (AddAssExp exp₁ exp₂) ρ = NumVal v
+  where
+    NumVal n₁ = valueOf exp₁ ρ
+    NumVal n₂ = valueOf exp₂ ρ
+    v = valueOf (n₁ + n₂) ρ
+    ρ' = extendEnv n₁ ρ
 -- Variable declarations
 valueOf (LetExp var rhs body) ρ = valueOf body ρ'
   where

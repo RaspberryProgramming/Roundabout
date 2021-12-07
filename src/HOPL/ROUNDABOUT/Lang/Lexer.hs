@@ -42,6 +42,8 @@ checkedDef =
         ],
       Tok.reservedNames =
         [ "let",
+          "loop",
+          "Type",
           "in",
           "if",
           "then",
