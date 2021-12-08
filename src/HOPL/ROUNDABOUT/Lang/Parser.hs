@@ -102,11 +102,12 @@ expression =
         <$> identifier,
       LoopExp
         <$> (reserved "loop" >> expression)
-        <*> (reserved "in" >> sepBy expression (symbol ";")
+        <*> (reserved "in" >> sepBy expression (symbol ";")),
       BoolExp
         <$> (expression, reservedOp, expression),  
+      {- TODO: Implement SequenceExp
       SequenceExp
-        <$> (expression)
+        <$> (expression) -}
     ]
 
 typeAnnotation :: Parser Type
