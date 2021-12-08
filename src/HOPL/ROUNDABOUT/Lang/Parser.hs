@@ -99,16 +99,14 @@ expression =
         <$> integer,
       -- Variable reference
       VarExp
-        <$> identifier
+        <$> identifier,
       LoopExp
         <$> (reserved "loop" >> expression)
         <*> (reserved "in" >> sepBy expression (symbol ";")
       BoolExp
-        <$> (expression, operator, expression),  
+        <$> (expression, reservedOp, expression),  
       SequenceExp
         <$> (expression)
-    
-
     ]
 
 typeAnnotation :: Parser Type
