@@ -16,7 +16,7 @@ where
 
 import HOPL.ROUNDABOUT.Type
 import HOPL.ROUNDABOUT.Lang.Lexer
-import HOPL.ROUNDABOUT.Lang.Syntax (Exp (..), Pgm (..))
+import HOPL.ROUNDABOUT.Lang.Syntax (Exp (..), Pgm (..), BinaryOp (..))
 import Text.Parsec (ParseError, choice, eof, many1, parse, sepBy, try)
 import qualified Text.Parsec.Expr as Ex
 import Text.Parsec.String (Parser)
@@ -93,18 +93,13 @@ expression =
         <*> (symbol "," >> expression <* symbol ")"),
       -- Arithmetic/numeric predicates
       IsZeroExp
-        <$> (reserved "zero?" >> parens expression),
+        <$> (reserved "zero?" >> parens expression)
       -- Integer literal
-      ConstExp
+      {- ConstExp
         <$> integer,
       -- Variable reference
       VarExp
-        <$> identifier,
-      LoopExp
-        <$> (reserved "loop" >> expression)
-        <*> (reserved "in" >> sepBy expression (symbol ";")),
-      BoolExp
-        <$> (expression, reservedOp, expression),  
+        <$> identifier, -}
       {- TODO: Implement SequenceExp
       SequenceExp
         <$> (expression) -}
@@ -120,4 +115,14 @@ typeAnnotation =
       ProcType
         <$> (symbol "(" >> typeAnnotation)
         <*> (reservedOp "->" >> typeAnnotation <* symbol ")")
+    ]
+binaryOperator :: Parser BinaryOp
+binaryOperator =
+  (choice . map try)
+    [ Equal <$ reservedOp "==",
+      NotEqual <$ reservedOp "!=",
+      Less <$ reservedOp "<",
+      LessEqual <$ reservedOp "<=",
+      Greater <$ reservedOp ">",
+      GreaterEqual <$ reservedOp ">="
     ]

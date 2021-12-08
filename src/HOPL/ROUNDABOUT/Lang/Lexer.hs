@@ -18,7 +18,7 @@ import qualified Text.Parsec.Token as Tok
 
 checkedLexer :: Tok.TokenParser ()
 checkedLexer =
-  Tok.makeTokenParser $ checkedDef
+  Tok.makeTokenParser checkedDef
 
 checkedDef =
   emptyDef

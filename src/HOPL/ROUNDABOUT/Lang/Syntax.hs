@@ -38,10 +38,9 @@ data Exp
   | LetrecExp Type Id Id Type Exp Exp
   | -- Control expressions
     IfExp Exp Exp Exp
-  | -- Function definition
-    ProcExp Id Type Exp
-  | LoopExp Exp Exp Exp
-  | BoolExp Exp Op Exp
+   -- Function definition
+  |  ProcExp Id Type Exp
+ -- | LoopExp Exp Exp Exp
  -- | CharExp Char
  -- | IntExp Int
  -- | StringExp Char Char Char...
@@ -55,7 +54,16 @@ data Exp
  -- | functExp Type Identifier (Type Identfier,..) Exp
  -- | SequenceExp [Exp]
  -- | functCallExp Indentifier [Exp]
- 
+    | BinaryExp BinaryOp Exp Exp
     -- Function call
   |  CallExp Exp Exp
+  deriving (Eq, Ord, Show)
+
+data BinaryOp
+  = Equal
+  | NotEqual
+  | Less
+  | Greater
+  | LessEqual
+  | GreaterEqual
   deriving (Eq, Ord, Show)
