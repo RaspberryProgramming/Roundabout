@@ -101,8 +101,8 @@ expression =
       VarExp
         <$> identifier
       LoopExp
-        <$> (reservedOp "loop" >> expression)
-        <*> (reserved "in" >> expression , expression),
+        <$> (reserved "loop" >> expression)
+        <*> (reserved "in" >> sepBy expression (symbol ";")
       BoolExp
         <$> (expression, operator, expression),  
       SequenceExp

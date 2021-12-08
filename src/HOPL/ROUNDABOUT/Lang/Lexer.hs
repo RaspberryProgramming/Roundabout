@@ -54,6 +54,7 @@ checkedDef =
           "int",
           "bool",
           "str",
+          "return",
           "list" -- Decide whether we need to remove later
         ]
     }
