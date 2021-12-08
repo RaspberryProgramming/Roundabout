@@ -41,7 +41,6 @@ data Exp
   | -- Function definition
     ProcExp Id Type Exp
   | LoopExp Exp Exp Exp
-  | ArithExp Exp Exp
   | BoolExp Exp Op Exp
  -- | CharExp Char
  -- | IntExp Int
@@ -58,5 +57,5 @@ data Exp
  -- | functCallExp Indentifier [Exp]
  
     -- Function call
-    CallExp Exp Exp
+  |  CallExp Exp Exp
   deriving (Eq, Ord, Show)
