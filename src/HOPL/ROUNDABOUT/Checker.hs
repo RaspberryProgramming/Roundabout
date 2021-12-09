@@ -98,6 +98,10 @@ typeOf (BinaryExp op exp₁ exp₂) τ
   where
     t₁ = typeOf exp₁ τ
     t₂ = typeOf exp₂ τ
+typeOf (AssignExp var exp₁ ) τ = t
+  where
+    τ' = extendTenv var t τ
+    t = typeOf exp₁ τ
 typeOf (IfExp exp₁ exp₂ exp₃) τ
   | t₁ /= BoolType = reportUnequalTypes BoolType t₁ exp₁
   | t₂ /= t₃ = reportUnequalTypes t₂ t₃ exp₂
@@ -126,5 +130,9 @@ typeOf (CallExp rator rand) τ
   where
     ProcType targ tres = typeOf rator τ
     targ' = typeOf rand τ
+
+typeOf (SequenceExp exps ret ) τ = t
+  where
+    t = typeOf ret τ
 
 {--- Auxiliary functions ---}

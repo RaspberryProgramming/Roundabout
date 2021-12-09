@@ -102,10 +102,14 @@ expression =
         <$> integer,
       -- Variable reference
       VarExp
-        <$> identifier
-      {- TODO: Implement SequenceExp
+        <$> identifier,
+      -- TODO: Implement SequenceExp
       SequenceExp
-        <$> (expression) -}
+        <$> (symbol "{" >> sepBy expression (symbol ";"))
+        <*>  (reserved "return" >> expression <* symbol "}"),
+      AssignExp
+        <$> (reserved "assign" >> identifier)
+        <*> (reservedOp "=" >> expression)
     ]
 
 typeAnnotation :: Parser Type

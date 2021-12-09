@@ -51,6 +51,7 @@ checkedDef =
           "zero?",
           "proc",
           "letrec",
+          "assign",
           "int",
           "bool",
           "str",

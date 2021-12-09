@@ -52,7 +52,8 @@ data Exp
  -- | strAssignExp Exp Int
  -- | strConcatExp Exp Exp
  -- | functExp Type Identifier (Type Identfier,..) Exp
- -- | SequenceExp [Exp]
+  | AssignExp Id Exp
+  | SequenceExp [Exp] Exp
  -- | functCallExp Indentifier [Exp]
   | BinaryExp BinaryOp Exp Exp
     -- Function call

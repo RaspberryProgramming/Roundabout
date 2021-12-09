@@ -24,6 +24,7 @@ import HOPL.ROUNDABOUT.Lang.Syntax (Exp (..), Pgm (..), BinaryOp (..))
 import HOPL.ROUNDABOUT.TypeEnv (TEnv (..), TypeEnvironment)
 import HOPL.Types (Source)
 import Prelude hiding (exp)
+import Text.Parsec.Error (Message(Expect))
 
 {- top-level interpreter routines -}
 
@@ -108,6 +109,16 @@ valueOf (CallExp rator rand) ρ = applyProcedure f arg
   where
     arg = valueOf rand ρ
     f = expvalToProc (valueOf rator ρ)
+valueOf (AssignExp id exp) ρ = v
+  where
+    ρ' = extendEnv id v ρ
+    v = valueOf exp ρ
+valueOf (SequenceExp [] exp') ρ = valueOf exp' ρ
+valueOf (SequenceExp (exp : exps) exp') ρ = ret
+  where
+    v = valueOf exp ρ
+    ret = valueOf (SequenceExp exps exp') ρ
+
 
 valueOf (BinaryExp op exp₁ exp₂) ρ = valueOfBinaryOp op exp₁ exp₂ ρ
 
