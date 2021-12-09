@@ -15,7 +15,7 @@ import Control.Monad (unless, void)
 import Control.Monad.Trans (liftIO)
 import qualified HOPL.CALL_BY_NEED.Interp as CALL_BY_NEED (interp)
 import qualified HOPL.CALL_BY_REFERENCE.Interp as CALL_BY_REFERENCE (interp)
-import qualified HOPL.ROUNDABOUT.Interp as CHECKED (checkAndInterp)
+import qualified HOPL.ROUNDABOUT.Interp as ROUNDABOUT (checkAndInterp)
 import qualified HOPL.EXPLICIT_REFS.Interp as EXPLICIT_REFS (interp)
 import qualified HOPL.IMPLICIT_REFS.Interp as IMPLICIT_REFS (interp)
 import qualified HOPL.INFERRED.Interp as INFERRED (checkAndInterp)
@@ -57,7 +57,7 @@ repl = do
                   "CALL_BY_REFERENCE" -> doInterp CALL_BY_REFERENCE.interp input
                   "CALL_BY_NEED" -> doInterp CALL_BY_NEED.interp input
                   "SIMPLE_STATEMENT" -> doInterp' SIMPLE_STATEMENT.interp input
-                  "CHECKED" -> doInterp CHECKED.checkAndInterp input
+                  "ROUNDABOUT" -> doInterp ROUNDABOUT.checkAndInterp input
                   "INFERRED" -> doInterp INFERRED.checkAndInterp input
               )
               >> loop lang
