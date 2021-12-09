@@ -93,13 +93,16 @@ expression =
         <*> (symbol "," >> expression <* symbol ")"),
       -- Arithmetic/numeric predicates
       IsZeroExp
-        <$> (reserved "zero?" >> parens expression)
+        <$> (reserved "zero?" >> parens expression),
+      uncurry . BinaryExp
+        <$> binaryOperator
+        <*> parens (sepPairOf expression ","),
       -- Integer literal
-      {- ConstExp
+      ConstExp
         <$> integer,
       -- Variable reference
       VarExp
-        <$> identifier, -}
+        <$> identifier
       {- TODO: Implement SequenceExp
       SequenceExp
         <$> (expression) -}
@@ -126,3 +129,6 @@ binaryOperator =
       Greater <$ reservedOp ">",
       GreaterEqual <$ reservedOp ">="
     ]
+
+sepPairOf :: Parser a -> String -> Parser (a, a)
+sepPairOf p sep = (,) <$> p <*> (symbol sep >> p)

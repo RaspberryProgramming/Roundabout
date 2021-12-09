@@ -63,10 +63,6 @@ valueOf (DiffExp exp₁ exp₂) ρ = NumVal (n₁ - n₂)
   where
     NumVal n₁ = valueOf exp₁ ρ
     NumVal n₂ = valueOf exp₂ ρ
-valueOf (DiffExp exp₁ exp₂) ρ = NumVal (n₁ - n₂)
-  where
-    NumVal n₁ = valueOf exp₁ ρ
-    NumVal n₂ = valueOf exp₂ ρ
 valueOf (AddExp exp₁ exp₂) ρ = NumVal (n₁ + n₂)
   where
     NumVal n₁ = valueOf exp₁ ρ
@@ -75,7 +71,7 @@ valueOf (MultExp exp₁ exp₂) ρ = NumVal (n₁ * n₂)
   where
     NumVal n₁ = valueOf exp₁ ρ
     NumVal n₂ = valueOf exp₂ ρ
-valueOf (DivExp exp₁ exp₂) ρ = NumVal (abs (fromIntegral n₁ / fromIntegral n₂))
+valueOf (DivExp exp₁ exp₂) ρ = NumVal (abs (n₁ `div` n₂))
   where
     NumVal n₁ = valueOf exp₁ ρ
     NumVal n₂ = valueOf exp₂ ρ
@@ -112,9 +108,7 @@ valueOf (CallExp rator rand) ρ = applyProcedure f arg
   where
     arg = valueOf rand ρ
     f = expvalToProc (valueOf rator ρ)
-valueOf (IsZeroExp exp₁) ρ = BoolVal (n == 0)
-  where
-    NumVal n = valueOf exp₁ ρ
+
 valueOf (BinaryExp op exp₁ exp₂) ρ = valueOfBinaryOp op exp₁ exp₂ ρ
 
 
@@ -128,9 +122,9 @@ valueOfBinaryOp op exp₁ exp₂ ρ = case op of
   Equal -> BoolVal (v₁ == v₂)
   NotEqual -> BoolVal (v₁ /= v₂)
   Less -> BoolVal (n₁ < n₂)
-  LessEqual -> BoolVal (n₁ < n₂)
+  LessEqual -> BoolVal (n₁ <= n₂)
   Greater -> BoolVal (n₁ < n₂)
-  GreaterEqual -> BoolVal (n₁ < n₂)
+  GreaterEqual -> BoolVal (n₁ <= n₂)
   where
     q₁ = expvalToBool v₁
     q₂ = expvalToBool v₂

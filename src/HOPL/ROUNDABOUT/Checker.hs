@@ -91,6 +91,13 @@ typeOf (DiffAssExp exp₁ exp₂) τ
   where
     t₁ = typeOf exp₁ τ
     t₂ = typeOf exp₂ τ
+typeOf (BinaryExp op exp₁ exp₂) τ
+  | t₁ /= IntType = reportUnequalTypes IntType t₁ exp₁
+  | t₂ /= IntType = reportUnequalTypes IntType t₂ exp₂
+  | otherwise = IntType
+  where
+    t₁ = typeOf exp₁ τ
+    t₂ = typeOf exp₂ τ
 typeOf (IfExp exp₁ exp₂ exp₃) τ
   | t₁ /= BoolType = reportUnequalTypes BoolType t₁ exp₁
   | t₂ /= t₃ = reportUnequalTypes t₂ t₃ exp₂

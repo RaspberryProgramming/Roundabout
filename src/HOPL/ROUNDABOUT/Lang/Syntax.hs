@@ -54,7 +54,7 @@ data Exp
  -- | functExp Type Identifier (Type Identfier,..) Exp
  -- | SequenceExp [Exp]
  -- | functCallExp Indentifier [Exp]
-    | BinaryExp BinaryOp Exp Exp
+  | BinaryExp BinaryOp Exp Exp
     -- Function call
   |  CallExp Exp Exp
   deriving (Eq, Ord, Show)
