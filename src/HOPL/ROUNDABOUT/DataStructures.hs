@@ -19,10 +19,13 @@ module HOPL.ROUNDABOUT.DataStructures
 where
 
 import HOPL.ROUNDABOUT.Lang.Syntax (Exp)
-import HOPL.Types (Id)
+import HOPL.Types (Id, Reference)
+
+--Storable values are any expressed value
+type StoVal = ExpVal
 
 -- Denoted values are any expressed value
-type DenVal = ExpVal
+type DenVal = Reference
 
 -- Expressed values may be th result of an expression.
 data ExpVal

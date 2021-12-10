@@ -109,7 +109,13 @@ expression =
         <*>  (reserved "return" >> expression <* symbol "}"),
       AssignExp
         <$> (reserved "assign" >> identifier)
-        <*> (reservedOp "=" >> expression)
+        <*> (reservedOp "=" >> expression),
+      LoopExp
+        <$> (reserved "loop" >> expression)
+        <*> (reserved "in" >> expression)
+     -- FunctExp
+      --  <$> (reserved "functionName" >> identifier )
+       -- <*> ()
     ]
 
 typeAnnotation :: Parser Type

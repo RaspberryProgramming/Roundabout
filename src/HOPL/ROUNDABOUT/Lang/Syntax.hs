@@ -40,7 +40,7 @@ data Exp
     IfExp Exp Exp Exp
    -- Function definition
   |  ProcExp Id Type Exp
- -- | LoopExp Exp Exp Exp
+  |  LoopExp Exp Exp
  -- | CharExp Char
  -- | IntExp Int
  -- | StringExp Char Char Char...
@@ -51,7 +51,7 @@ data Exp
  -- | listAssignExp Exp Int
  -- | strAssignExp Exp Int
  -- | strConcatExp Exp Exp
- -- | functExp Type Identifier (Type Identfier,..) Exp
+  | FunctExp Id [Id] Exp
   | AssignExp Id Exp
   | SequenceExp [Exp] Exp
  -- | functCallExp Indentifier [Exp]

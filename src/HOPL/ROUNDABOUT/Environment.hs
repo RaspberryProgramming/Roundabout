@@ -11,7 +11,7 @@
  -}
 module HOPL.ROUNDABOUT.Environment (Env (..)) where
 
-import HOPL.ROUNDABOUT.DataStructures (Binding, DenVal, Environment (..), ExpVal (ProcVal), Procedure (..))
+import HOPL.ROUNDABOUT.DataStructures (Binding, DenVal, Environment (..))
 import HOPL.Types (Id)
 
 {- Interface for an environment (symbol-to-value mapping) -}
@@ -35,13 +35,9 @@ instance Env Environment where
   emptyEnv = EmptyEnvironment
   extendEnv = Environment
   applyEnv EmptyEnvironment name = nobinding name
-  applyEnv ρ@(Environment name val ρ') name'
-    | name' == name = expand ρ val
-    | otherwise = applyEnv ρ' name'
-    where
-      expand ρ (ProcVal (OpenProcedure param body)) = ProcVal (ClosedProcedure param body ρ)
-      expand _ v = v
-
+  applyEnv (Environment name val env) name'
+    | name' == name = val
+    | otherwise = applyEnv env name'
   extendEnv' [] [] = id
   extendEnv' vars vals =
     extendEnv' (tail vars) (tail vals) . extendEnv (head vars) (head vals)
