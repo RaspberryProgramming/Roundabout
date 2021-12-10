@@ -132,8 +132,8 @@ applyProcedure :: Procedure -> DenVal -> Store -> Answer
 applyProcedure (ClosedProcedure x body ρ) arg σ = valueOf body (extendEnv x arg ρ) σ
 applyProcedure _ _ _ = undefined
 
-valueOfBinaryOp :: BinaryOp -> Exp -> Exp -> Environment -> Store -> Answer
-valueOfBinaryOp op exp₁ exp₂ ρ = case op of
+valueOfBinaryOp :: BinaryOp -> Exp -> Exp -> Environment -> Store -> ExpVal
+valueOfBinaryOp op exp₁ exp₂ ρ σ = case op of
   Equal -> BoolVal (v₁ == v₂)
   NotEqual -> BoolVal (v₁ /= v₂)
   Less -> BoolVal (n₁ < n₂)
@@ -145,5 +145,5 @@ valueOfBinaryOp op exp₁ exp₂ ρ = case op of
     q₂ = expvalToBool v₂
     n₁ = expvalToNum v₁
     n₂ = expvalToNum v₂
-    v₁ = valueOf exp₁ ρ
-    v₂ = valueOf exp₂ ρ
+    v₁ = getVal (valueOf exp₁ ρ σ)
+    v₂ = getVal (valueOf exp₂ ρ σ)
