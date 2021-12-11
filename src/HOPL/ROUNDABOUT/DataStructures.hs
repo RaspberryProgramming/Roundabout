@@ -12,6 +12,7 @@
 module HOPL.ROUNDABOUT.DataStructures
   ( ExpVal (..),
     DenVal,
+    StoVal,
     Binding,
     Environment (..),
     Procedure (..),

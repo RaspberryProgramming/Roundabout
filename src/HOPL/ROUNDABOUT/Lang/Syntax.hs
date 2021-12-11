@@ -39,7 +39,7 @@ data Exp
   | -- Control expressions
     IfExp Exp Exp Exp
    -- Function definition
-  |  ProcExp Id Type Exp
+  |  ProcExp Id Exp
   |  LoopExp Exp Exp
  -- | CharExp Char
  -- | IntExp Int

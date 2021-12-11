@@ -65,7 +65,6 @@ expression =
       -- Function definition
       ProcExp
         <$> (reserved "proc" >> symbol "(" >> identifier)
-        <*> (symbol ":" >> typeAnnotation)
         <*> (symbol ")" >> expression),
       -- Function call
       CallExp

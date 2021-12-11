@@ -9,7 +9,7 @@
  -
  -  Author: Matthew A Johnson
  -}
-module HOPL.IMPLICIT_REFS.Store
+module HOPL.ROUNDABOUT.Store
   ( Store,
     emptyStore,
     newref,
@@ -18,7 +18,7 @@ module HOPL.IMPLICIT_REFS.Store
   )
 where
 
-import HOPL.IMPLICIT_REFS.DataStructures (StoVal)
+import HOPL.ROUNDABOUT.DataStructures (StoVal)
 import HOPL.Types (Reference)
 
 type Store = [StoVal]

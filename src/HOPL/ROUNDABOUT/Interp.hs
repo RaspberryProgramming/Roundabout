@@ -21,7 +21,7 @@ import HOPL.ROUNDABOUT.DataStructures (DenVal, Environment, ExpVal (..), Procedu
 import HOPL.ROUNDABOUT.Environment (Env (..))
 import HOPL.ROUNDABOUT.Lang.Parser (ParseError, parseToplevel)
 import HOPL.ROUNDABOUT.Lang.Syntax (Exp (..), Pgm (..), BinaryOp (..))
-import HOPL.IMPLICIT_REFS.Store (Store, deref, emptyStore, newref, setref)
+import HOPL.ROUNDABOUT.Store (Store, deref, emptyStore, newref, setref)
 import HOPL.ROUNDABOUT.TypeEnv (TEnv (..), TypeEnvironment)
 import HOPL.Types (Source)
 import Prelude hiding (exp)
@@ -66,28 +66,28 @@ valueOf (DiffExp exp₁ exp₂) ρ σ = Answer (NumVal (n₁ - n₂)) σ₂
   where
     Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
     Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
-valueOf (AddExp exp₁ exp₂) ρ = Answer (NumVal (n₁ + n₂)) σ₂
+valueOf (AddExp exp₁ exp₂) ρ σ = Answer (NumVal (n₁ + n₂)) σ₂
   where
-    NumVal n₁ = valueOf exp₁ ρ
-    NumVal n₂ = valueOf exp₂ ρ
-valueOf (MultExp exp₁ exp₂) ρ = Answer (NumVal (n₁ * n₂)) σ₂
+    Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
+    Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
+valueOf (MultExp exp₁ exp₂) ρ σ = Answer (NumVal (n₁ * n₂)) σ₂
   where
-    NumVal n₁ = valueOf exp₁ ρ
-    NumVal n₂ = valueOf exp₂ ρ
-valueOf (DivExp exp₁ exp₂) ρ = Answer (NumVal (abs (n₁ `div` n₂))) σ₂
+    Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
+    Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
+valueOf (DivExp exp₁ exp₂) ρ σ = Answer (NumVal (abs (n₁ `div` n₂))) σ₂
   where
-    NumVal n₁ = valueOf exp₁ ρ
-    NumVal n₂ = valueOf exp₂ ρ
+    Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
+    Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
 valueOf (DiffAssExp exp₁ exp₂) ρ σ = Answer (NumVal (n₁ - n₂)) σ₂
   where
-    NumVal n₁ = valueOf exp₁ ρ
-    NumVal n₂ = valueOf exp₂ ρ
+    Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
+    Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
     -- TODO: Implement DiffAss and AddAss
     -- ρ' = applyEnv n₁ (n₁ - n₂) ρ 
-valueOf (AddAssExp exp₁ exp₂) ρ = Answer (NumVal (n₁ + n₂)) σ₂
+valueOf (AddAssExp exp₁ exp₂) ρ σ = Answer (NumVal (n₁ + n₂)) σ₂
   where
-    NumVal n₁ = valueOf exp₁ ρ
-    NumVal n₂ = valueOf exp₂ ρ
+    Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
+    Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
     {-v = valueOf (n₁ + n₂) ρ
     ρ' = extendEnv n₁ ρ-}
 -- Variable declarations
@@ -96,11 +96,6 @@ valueOf (LetExp x rhs body) ρ σ = valueOf body ρ' σ₂
     ρ' = extendEnv x addr ρ
     (addr, σ₂) = newref v σ₁
     Answer v σ₁ = valueOf rhs ρ σ
-valueOf (LetrecExp pname param pbody body) ρ σ = valueOf body ρ' σ₂
-  where
-    (addr, σ₁) = newref undefined σ
-    ρ' = extendEnv pname addr ρ
-    σ₂ = setref addr (ProcVal (ClosedProcedure param pbody ρ')) σ₁
 valueOf (IfExp exp₁ exp₂ exp₃) ρ σ = valueOf exp' ρ σ₁
   where
     Answer q σ₁ = valueOf exp₁ ρ σ
@@ -113,15 +108,20 @@ valueOf (CallExp rator rand) ρ σ = applyProcedure (expvalToProc f) addr σ₃
     Answer f σ₁ = valueOf rator ρ σ
     Answer v σ₂ = valueOf rand ρ σ₁
     (addr, σ₃) = newref v σ₂
-valueOf (AssignExp var rhs) ρ σ = Answer (NumVal 42) σ₂
+valueOf (AssignExp var rhs) ρ σ = Answer rval σ₂
   where
     Answer rval σ₁ = valueOf rhs ρ σ
     σ₂ = setref (applyEnv ρ var) rval σ₁
-valueOf (SequenceExp [] exp') ρ σ = Answer(valueOf exp' ρ σ) σ
-valueOf (SequenceExp (exp : exps) exp') ρ σ = Answer(ret σ) σ
+valueOf (SequenceExp [] exp') ρ σ = Answer v σ
+  where
+    a = valueOf exp' ρ σ
+    v = getVal a
+valueOf (SequenceExp (exp : exps) exp') ρ σ = Answer retVal σ
   where
     v = valueOf exp ρ σ
-    ret = valueOf (SequenceExp exps exp') ρ
+    ret = valueOf (SequenceExp exps exp') ρ σ
+    retVal = getVal ret
+
 
 
 valueOf (BinaryExp op exp₁ exp₂) ρ σ = Answer(valueOfBinaryOp op exp₁ exp₂ ρ σ) σ

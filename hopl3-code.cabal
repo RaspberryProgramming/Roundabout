@@ -44,6 +44,7 @@ library
       HOPL.ROUNDABOUT.DataStructures
       HOPL.ROUNDABOUT.Environment
       HOPL.ROUNDABOUT.Interp
+      HOPL.ROUNDABOUT.Store
       HOPL.ROUNDABOUT.Lang.Lexer
       HOPL.ROUNDABOUT.Lang.Parser
       HOPL.ROUNDABOUT.Lang.Syntax

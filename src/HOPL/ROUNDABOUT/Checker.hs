@@ -120,10 +120,9 @@ typeOf (LetrecExp tres pname param targ pbody body) τ
   where
     τ' = extendTenv pname (ProcType targ tres) τ
     tres' = typeOf pbody (extendTenv param targ τ')
-typeOf (ProcExp param targ body) τ = ProcType targ tres
+typeOf (ProcExp param body) τ = tres
   where
-    tres = typeOf body τ'
-    τ' = extendTenv param targ τ
+    tres = typeOf body τ
 typeOf (CallExp rator rand) τ
   | targ == targ' = tres
   | otherwise = reportUnequalTypes targ targ' rand
