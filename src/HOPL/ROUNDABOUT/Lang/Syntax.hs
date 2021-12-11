@@ -57,7 +57,7 @@ data Exp
  -- | functCallExp Indentifier [Exp]
   | BinaryExp BinaryOp Exp Exp
     -- Function call
-  |  CallExp Exp Exp
+  | CallExp Exp Exp
   deriving (Eq, Ord, Show)
 
 data BinaryOp

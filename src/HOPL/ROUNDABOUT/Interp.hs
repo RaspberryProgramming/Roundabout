@@ -114,15 +114,31 @@ valueOf (AssignExp var rhs) ρ σ = Answer rval σ₂
     σ₂ = setref (applyEnv ρ var) rval σ₁
 valueOf (SequenceExp [] exp') ρ σ = Answer v σ
   where
-    a = valueOf exp' ρ σ
-    v = getVal a
-valueOf (SequenceExp (exp : exps) exp') ρ σ = Answer retVal σ
+    ans = valueOf exp' ρ σ
+    v = getVal ans
+    σ₁ = getStore ans
+    
+valueOf (SequenceExp (exp : exps) exp') ρ σ = Answer retVal σ₁
   where
     v = valueOf exp ρ σ
-    ret = valueOf (SequenceExp exps exp') ρ σ
+    σ₁ = getStore v
+    ret = valueOf (SequenceExp exps exp') ρ σ₁
     retVal = getVal ret
+    σ₂ = getStore ret
 
+valueOf (LoopExp exp₁ exp₂) ρ σ = Answer retVal σ₂
+  where
+    expAns = valueOf exp₂ ρ σ
+    σ₁ = getStore expAns
 
+    cont = getVal (valueOf exp₁ ρ σ₁)
+
+    ret = case cont of
+      BoolVal True -> valueOf (LoopExp exp₁ exp₂) ρ σ₁
+      BoolVal False -> expAns
+    
+    σ₂ = getStore ret
+    retVal = getVal ret
 
 valueOf (BinaryExp op exp₁ exp₂) ρ σ = Answer(valueOfBinaryOp op exp₁ exp₂ ρ σ) σ
 

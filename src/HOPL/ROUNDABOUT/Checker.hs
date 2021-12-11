@@ -130,8 +130,9 @@ typeOf (CallExp rator rand) τ
     ProcType targ tres = typeOf rator τ
     targ' = typeOf rand τ
 
-typeOf (SequenceExp exps ret ) τ = t
-  where
-    t = typeOf ret τ
+typeOf (SequenceExp exp₁ exp₂) τ = IntType
 
+typeOf (LoopExp exp₁ exp₂) τ = t
+  where
+    t = typeOf exp₂ τ
 {--- Auxiliary functions ---}
