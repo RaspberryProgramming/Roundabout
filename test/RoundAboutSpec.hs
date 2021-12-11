@@ -19,8 +19,13 @@ import HOPL.ROUNDABOUT.Type (Type (..))
 import HOPL.ROUNDABOUT.TypeEnv
 import Test.Tasty.Hspec
 
+testStore = [NumVal 1, NumVal 5, NumVal 10]
+
 testEnv =
   extendEnv'
+    ["i", "v", "x"]
+    [0, 1, 2]
+    emptyEnv  extendEnv'
     ["i", "v", "x"]
     [NumVal 1, NumVal 5, NumVal 10]
     emptyEnv
@@ -97,6 +102,8 @@ spec =
       specify "nested-procs2" $
         interp "let f = proc(x : int) proc (y : int) -(x,y) in ((f -(10,5)) 6)"
           `shouldBe` NumVal (-1)
+      specify "" $
+        interp "let x = 0 in let y = 1 in loop <(x,y) in {assign x = +(x,1) return x}" `shouldBe` NumVal 1
       specify "y-combinator-1" $
         interp
           "let fix =  proc (f : bool) \
