@@ -157,7 +157,7 @@ test-suite hopl3-test
   other-modules:
       CallByNeedSpec
       CallByReferenceSpec
-      CheckedSpec
+      RoundAboutSpec
       ExplicitRefsSpec
       ImplicitRefsSpec
       InferredSpec
