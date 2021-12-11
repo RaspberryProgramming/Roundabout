@@ -77,20 +77,16 @@ typeOf (MultExp exp₁ exp₂) τ
   where
     t₁ = typeOf exp₁ τ
     t₂ = typeOf exp₂ τ
-typeOf (AddAssExp exp₁ exp₂) τ
-  | t₁ /= IntType = reportUnequalTypes IntType t₁ exp₁
-  | t₂ /= IntType = reportUnequalTypes IntType t₂ exp₂
+typeOf (AddAssExp x exp) τ
+  | t /= IntType = reportUnequalTypes IntType t exp
   | otherwise = IntType
   where
-    t₁ = typeOf exp₁ τ
-    t₂ = typeOf exp₂ τ
-typeOf (DiffAssExp exp₁ exp₂) τ
-  | t₁ /= IntType = reportUnequalTypes IntType t₁ exp₁
-  | t₂ /= IntType = reportUnequalTypes IntType t₂ exp₂
+    t = typeOf exp τ
+typeOf (DiffAssExp x exp) τ
+  | t /= IntType = reportUnequalTypes IntType t exp
   | otherwise = IntType
   where
-    t₁ = typeOf exp₁ τ
-    t₂ = typeOf exp₂ τ
+    t = typeOf exp τ
 typeOf (BinaryExp op exp₁ exp₂) τ
   | t₁ /= IntType = reportUnequalTypes IntType t₁ exp₁
   | t₂ /= IntType = reportUnequalTypes IntType t₂ exp₂

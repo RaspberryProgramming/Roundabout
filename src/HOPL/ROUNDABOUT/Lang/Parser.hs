@@ -85,10 +85,10 @@ expression =
         <*> (symbol "," >> expression <* symbol ")"),
       -- Arith Assignment Expressions
       AddAssExp
-        <$> (reservedOp "+=" >> symbol "(" >> expression)
+        <$> (reservedOp "+=" >> symbol "(" >> identifier)
         <*> (symbol "," >> expression <* symbol ")"),
       DiffAssExp
-        <$> (reservedOp "-=" >> symbol "(" >> expression)
+        <$> (reservedOp "-=" >> symbol "(" >> identifier)
         <*> (symbol "," >> expression <* symbol ")"),
       -- Arithmetic/numeric predicates
       IsZeroExp

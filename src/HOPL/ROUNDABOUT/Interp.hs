@@ -78,18 +78,20 @@ valueOf (DivExp exp₁ exp₂) ρ σ = Answer (NumVal (abs (n₁ `div` n₂))) �
   where
     Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
     Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
-valueOf (DiffAssExp exp₁ exp₂) ρ σ = Answer (NumVal (n₁ - n₂)) σ₂
+valueOf (DiffAssExp x exp) ρ σ = Answer res σ₂
   where
-    Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
-    Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
-    -- TODO: Implement DiffAss and AddAss
-    -- ρ' = applyEnv n₁ (n₁ - n₂) ρ 
-valueOf (AddAssExp exp₁ exp₂) ρ σ = Answer (NumVal (n₁ + n₂)) σ₂
+    addr = applyEnv ρ x
+    NumVal v = deref addr σ
+    Answer (NumVal n₁) σ₁ = valueOf exp ρ σ
+    res = NumVal (v-n₁)
+    σ₂ = setref (applyEnv ρ x) res σ₁
+valueOf (AddAssExp x exp) ρ σ = Answer res σ₂
   where
-    Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
-    Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
-    {-v = valueOf (n₁ + n₂) ρ
-    ρ' = extendEnv n₁ ρ-}
+    addr = applyEnv ρ x
+    NumVal v = deref addr σ
+    Answer (NumVal n₁) σ₁ = valueOf exp ρ σ
+    res = NumVal (v+n₁)
+    σ₂ = setref (applyEnv ρ x) res σ₁
 -- Variable declarations
 valueOf (LetExp x rhs body) ρ σ = valueOf body ρ' σ₂
   where

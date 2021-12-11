@@ -31,8 +31,8 @@ data Exp
   | AddExp Exp Exp
   | DivExp Exp Exp
   | MultExp Exp Exp
-  | AddAssExp Exp Exp
-  | DiffAssExp Exp Exp
+  | AddAssExp Id Exp
+  | DiffAssExp Id Exp
   | -- Variable declarations
     LetExp Id Exp Exp
   | LetrecExp Type Id Id Type Exp Exp
