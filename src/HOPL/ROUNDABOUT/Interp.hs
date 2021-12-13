@@ -30,60 +30,72 @@ data Answer = Answer {getVal :: ExpVal, getStore :: Store}
 
 {- top-level interpreter routines -}
 
-interp :: Source -> Either ParseError ExpVal
+interp :: Source -> Either ParseError (IO ExpVal)
 interp = interpWith emptyEnv emptyStore
 
-interpWith' :: Environment -> Store -> Source -> ExpVal
+interpWith' :: Environment -> Store -> Source -> IO ExpVal
 interpWith' ρ σ = fromRight undefined . interpWith ρ σ
 
-interpWith :: Environment -> Store -> Source -> Either ParseError ExpVal
+interpWith :: Environment -> Store -> Source -> Either ParseError (IO ExpVal)
 interpWith ρ σ src = flip (`valueOfProgram` ρ) σ <$> parseToplevel src
 
 {- semantic reduction of a program -}
 
-valueOfProgram :: Pgm -> Environment -> Store -> ExpVal
-valueOfProgram (Pgm exp) ρ σ = getVal (valueOf exp ρ σ)
+valueOfProgram :: Pgm -> Environment -> Store -> IO ExpVal
+valueOfProgram (Pgm exp) ρ σ = getVal <$> valueOf exp ρ σ
 
 {- semantic reductions for expressions -}
 
-valueOf :: Exp -> Environment -> Store -> Answer
-valueOf (VarExp x) ρ σ = Answer (deref addr σ) σ
+valueOf :: Exp -> Environment -> Store -> IO Answer
+valueOf (VarExp x) ρ σ = return (Answer (deref addr σ) σ)
   where
     addr = applyEnv ρ x
-valueOf (ConstExp n) _ σ = Answer (NumVal n) σ
-valueOf (IsZeroExp exp₁) ρ σ = Answer (BoolVal (n == 0)) σ₁
-  where
-    Answer (NumVal n) σ₁ = valueOf exp₁ ρ σ
-valueOf (DiffExp exp₁ exp₂) ρ σ = Answer (NumVal (n₁ - n₂)) σ₂
-  where
-    Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
-    Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
-valueOf (AddExp exp₁ exp₂) ρ σ = Answer (NumVal (n₁ + n₂)) σ₂
-  where
-    Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
-    Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
-valueOf (MultExp exp₁ exp₂) ρ σ = Answer (NumVal (n₁ * n₂)) σ₂
-  where
-    Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
-    Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
-valueOf (DivExp exp₁ exp₂) ρ σ = Answer (NumVal (abs (n₁ `div` n₂))) σ₂
-  where
-    Answer (NumVal n₁) σ₁ = valueOf exp₁ ρ σ
-    Answer (NumVal n₂) σ₂ = valueOf exp₂ ρ σ₁
-valueOf (DiffAssExp x exp) ρ σ = Answer res σ₂
-  where
-    addr = applyEnv ρ x
-    NumVal v = deref addr σ
-    Answer (NumVal n₁) σ₁ = valueOf exp ρ σ
-    res = NumVal (v-n₁)
-    σ₂ = setref (applyEnv ρ x) res σ₁
-valueOf (AddAssExp x exp) ρ σ = Answer res σ₂
-  where
-    addr = applyEnv ρ x
-    NumVal v = deref addr σ
-    Answer (NumVal n₁) σ₁ = valueOf exp ρ σ
-    res = NumVal (v+n₁)
-    σ₂ = setref (applyEnv ρ x) res σ₁
+valueOf (ConstExp n) _ σ = return $ Answer (NumVal n) σ
+
+valueOf (IsZeroExp exp₁) ρ σ = do
+  Answer (NumVal n) σ₁ <- valueOf exp₁ ρ σ
+  return $ Answer (BoolVal (n == 0)) σ₁
+    
+valueOf (DiffExp exp₁ exp₂) ρ σ = do
+  Answer (NumVal n₁) σ₁ <- valueOf exp₁ ρ σ
+  Answer (NumVal n₂) σ₂ <- valueOf exp₂ ρ σ₁
+  return $ Answer (NumVal (n₁ - n₂)) σ₂
+valueOf (AddExp exp₁ exp₂) ρ σ = do
+  Answer (NumVal n₁) σ₁ <- valueOf exp₁ ρ σ
+  Answer (NumVal n₂) σ₂ <- valueOf exp₂ ρ σ₁
+  return $ Answer (NumVal (n₁ + n₂)) σ₂
+valueOf (MultExp exp₁ exp₂) ρ σ = do
+  Answer (NumVal n₁) σ₁ <- valueOf exp₁ ρ σ
+  Answer (NumVal n₂) σ₂ <- valueOf exp₂ ρ σ₁
+  return $ Answer (NumVal (n₁ * n₂)) σ₂
+valueOf (DivExp exp₁ exp₂) ρ σ = do
+  Answer (NumVal n₁) σ₁ <- valueOf exp₁ ρ σ
+  Answer (NumVal n₂) σ₂ <- valueOf exp₂ ρ σ₁
+  return $ Answer (NumVal (abs (n₁ `div` n₂))) σ₂
+valueOf (DiffAssExp x exp) ρ σ = do
+  let addr = applyEnv ρ x
+  let NumVal v = deref addr σ
+  Answer (NumVal n₁) σ₁ <- valueOf exp ρ σ
+  let res = NumVal (v-n₁)
+  let σ₂ = setref (applyEnv ρ x) res σ₁
+  return $ Answer (res) σ₂
+valueOf (AddAssExp x exp) ρ σ = do
+  let addr = applyEnv ρ x
+  let NumVal v = deref addr σ
+  Answer (NumVal n₁) σ₁ <- valueOf exp ρ σ
+  let res = NumVal (v+n₁)
+  let σ₂ = setref (applyEnv ρ x) res σ₁
+  return $ Answer (res) σ₂
+{-valueOf EmptyExp ρ σ = return (Answer ( ListVal [] ) σ)
+valueOf (ListExp exps) ρ σ = do
+  valof n = ret
+    where
+      ret <- valueOf n ρ σ
+  let vsa = map valof exps 
+  let vs = map getVal vsa
+  return (Answer (ListVal vs) σ)
+-}
+{-
  -- List constructors
 valueOf EmptyExp ρ σ = Answer ( ListVal [] ) σ
 valueOf (ListExp exps) ρ σ = Answer (ListVal vs) σ
@@ -92,11 +104,14 @@ valueOf (ListExp exps) ρ σ = Answer (ListVal vs) σ
   vsa = map valof exps 
   vs = map getVal vsa
 -- Variable declarations
-valueOf (LetExp x rhs body) ρ σ = valueOf body ρ' σ₂
-  where
-    ρ' = extendEnv x addr ρ
-    (addr, σ₂) = newref v σ₁
-    Answer v σ₁ = valueOf rhs ρ σ
+-}
+valueOf (LetExp x rhs body) ρ σ = do
+  Answer v σ₁ <- valueOf rhs ρ σ -- <- extracts from IO layer
+  let (addr, σ₂) = newref v σ₁
+  let ρ' = extendEnv x addr ρ
+  valueOf body ρ' σ₂ -- Already wrapped in IO layer, return wrapps items in IO layer
+    
+{-
 valueOf (IfExp exp₁ exp₂ exp₃) ρ σ = valueOf exp' ρ σ₁
   where
     Answer q σ₁ = valueOf exp₁ ρ σ
@@ -153,14 +168,14 @@ valueOf (PrintExp exp₁) ρ σ = Answer v σ
   where
     v = getVal ( valueOf exp₁ ρ σ)
     x = show v
-    -- show v
+    -- show v-}
 
 {- Auxiliary function for applying procedure values -}
-applyProcedure :: Procedure -> DenVal -> Store -> Answer
+{-applyProcedure :: Procedure -> DenVal -> Store -> Answer
 applyProcedure (ClosedProcedure x body ρ) arg σ = valueOf body (extendEnv x arg ρ) σ
-applyProcedure _ _ _ = undefined
+applyProcedure _ _ _ = undefined-}
 
-valueOfBinaryOp :: BinaryOp -> Exp -> Exp -> Environment -> Store -> ExpVal
+{- valueOfBinaryOp :: BinaryOp -> Exp -> Exp -> Environment -> Store -> ExpVal
 valueOfBinaryOp op exp₁ exp₂ ρ σ = case op of
   Equal -> BoolVal (v₁ == v₂)
   NotEqual -> BoolVal (v₁ /= v₂)
@@ -174,4 +189,4 @@ valueOfBinaryOp op exp₁ exp₂ ρ σ = case op of
     n₁ = expvalToNum v₁
     n₂ = expvalToNum v₂
     v₁ = getVal (valueOf exp₁ ρ σ)
-    v₂ = getVal (valueOf exp₂ ρ σ)
+    v₂ = getVal (valueOf exp₂ ρ σ) -}

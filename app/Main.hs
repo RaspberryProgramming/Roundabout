@@ -57,10 +57,20 @@ repl = do
                   "CALL_BY_REFERENCE" -> doInterp CALL_BY_REFERENCE.interp input
                   "CALL_BY_NEED" -> doInterp CALL_BY_NEED.interp input
                   "SIMPLE_STATEMENT" -> doInterp' SIMPLE_STATEMENT.interp input
-                  "ROUNDABOUT" -> doInterp ROUNDABOUT.interp input
+                  "ROUNDABOUT" -> doIOInterp ROUNDABOUT.interp input
                   "INFERRED" -> doInterp INFERRED.checkAndInterp input
               )
               >> loop lang
+
+doIOInterp :: Show a => Interpreter (IO a) -> Source -> IO ()
+doIOInterp interp input =
+  case interp input of
+    Left err -> print err
+    Right ioVal -> do
+      val <- ioVal
+      print val
+      return ()
+    `catch` (\e -> hPrint stderr (e :: ErrorCall))
 
 doInterp :: Show a => Interpreter a -> Source -> IO ()
 doInterp interp input =
