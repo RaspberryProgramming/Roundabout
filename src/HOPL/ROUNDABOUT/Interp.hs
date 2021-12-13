@@ -9,20 +9,18 @@
  -  Author: Matthew A Johnson
  -}
 module HOPL.ROUNDABOUT.Interp
-  ( checkAndInterp,
-    checkAndInterpWith,
+  (
     interpWith,
+    interp
   )
 where
 
 import Data.Either (fromRight)
-import HOPL.ROUNDABOUT.Checker
 import HOPL.ROUNDABOUT.DataStructures (DenVal, Environment, ExpVal (..), Procedure (..))
 import HOPL.ROUNDABOUT.Environment (Env (..))
 import HOPL.ROUNDABOUT.Lang.Parser (ParseError, parseToplevel)
 import HOPL.ROUNDABOUT.Lang.Syntax (Exp (..), Pgm (..), BinaryOp (..))
 import HOPL.ROUNDABOUT.Store (Store, deref, emptyStore, newref, setref)
-import HOPL.ROUNDABOUT.TypeEnv (TEnv (..), TypeEnvironment)
 import HOPL.Types (Source)
 import Prelude hiding (exp)
 import Text.Parsec.Error (Message(Expect))
@@ -31,12 +29,6 @@ import Text.Parsec.Error (Message(Expect))
 data Answer = Answer {getVal :: ExpVal, getStore :: Store}
 
 {- top-level interpreter routines -}
-
-checkAndInterp :: Source -> Either ParseError ExpVal
-checkAndInterp = checkAndInterpWith emptyTenv emptyEnv emptyStore
-
-checkAndInterpWith :: TypeEnvironment -> Environment -> Store -> Source -> Either ParseError ExpVal
-checkAndInterpWith τ ρ σ src = flip (`valueOfProgram` ρ) σ <$> checkWith τ src
 
 interp :: Source -> Either ParseError ExpVal
 interp = interpWith emptyEnv emptyStore
@@ -92,6 +84,13 @@ valueOf (AddAssExp x exp) ρ σ = Answer res σ₂
     Answer (NumVal n₁) σ₁ = valueOf exp ρ σ
     res = NumVal (v+n₁)
     σ₂ = setref (applyEnv ρ x) res σ₁
+ -- List constructors
+valueOf EmptyExp ρ σ = Answer ( ListVal [] ) σ
+valueOf (ListExp exps) ρ σ = Answer (ListVal vs) σ
+  where
+  valof n = valueOf n ρ σ
+  vsa = map valof exps 
+  vs = map getVal vsa
 -- Variable declarations
 valueOf (LetExp x rhs body) ρ σ = valueOf body ρ' σ₂
   where
@@ -143,7 +142,18 @@ valueOf (LoopExp exp₁ exp₂) ρ σ = Answer retVal σ₂
     retVal = getVal ret
 
 valueOf (BinaryExp op exp₁ exp₂) ρ σ = Answer(valueOfBinaryOp op exp₁ exp₂ ρ σ) σ
-
+valueOf (StringExp s) _ σ = Answer (StrVal s) σ
+valueOf (LookupExp exp₁ exp₂) ρ σ = Answer v σ
+  where
+    Answer (NumVal loc) σ₁ = valueOf exp₂ ρ σ
+    Answer (ListVal list) σ₂ = valueOf exp₁ ρ σ
+    -- loc = NumVal (getVal (valueOf exp₂ ρ σ))
+    v = list !! fromInteger loc
+valueOf (PrintExp exp₁) ρ σ = Answer v σ
+  where
+    v = getVal ( valueOf exp₁ ρ σ)
+    x = show v
+    -- show v
 
 {- Auxiliary function for applying procedure values -}
 applyProcedure :: Procedure -> DenVal -> Store -> Answer

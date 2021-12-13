@@ -14,7 +14,6 @@ module HOPL.ROUNDABOUT.Lang.Parser
   )
 where
 
-import HOPL.ROUNDABOUT.Type
 import HOPL.ROUNDABOUT.Lang.Lexer
 import HOPL.ROUNDABOUT.Lang.Syntax (Exp (..), Pgm (..), BinaryOp (..))
 import Text.Parsec (ParseError, choice, eof, many1, parse, sepBy, try)
@@ -48,13 +47,6 @@ expression =
     [ -- Variable declarations
       LetExp
         <$> (reserved "let" >> identifier)
-        <*> (reserved "=" >> expression)
-        <*> (reserved "in" >> expression),
-      LetrecExp
-        <$> (reserved "letrec" >> typeAnnotation)
-        <*> identifier
-        <*> (symbol "(" >> identifier)
-        <*> (symbol ":" >> typeAnnotation <* symbol ")")
         <*> (reserved "=" >> expression)
         <*> (reserved "in" >> expression),
       -- Control expressions
@@ -111,23 +103,25 @@ expression =
         <*> (reservedOp "=" >> expression),
       LoopExp
         <$> (reserved "loop" >> expression)
-        <*> (reserved "in" >> expression)
+        <*> (reserved "in" >> expression),
      -- FunctExp
       --  <$> (reserved "functionName" >> identifier )
-       -- <*> ()
+       -- <*> (),
+      EmptyExp
+        <$ reserved "emptylist",
+      ListExp
+        <$> (reservedOp "[" >> sepBy expression (symbol ",") <* reservedOp "]"),
+      StringExp
+        <$> stringLiteral,
+      LookupExp
+        <$> (reserved "lookup" >> expression <* reservedOp "[")
+        <*> ( expression <* reservedOp "]"),
+      -- StrLookupExp 
+      --  <$> (expression)
+      PrintExp
+        <$> (reserved "print" <* symbol "(" >> expression <* symbol ")")
     ]
 
-typeAnnotation :: Parser Type
-typeAnnotation =
-  (choice . map try)
-    [ IntType
-        <$ reserved "int",
-      BoolType
-        <$ reserved "bool",
-      ProcType
-        <$> (symbol "(" >> typeAnnotation)
-        <*> (reservedOp "->" >> typeAnnotation <* symbol ")")
-    ]
 binaryOperator :: Parser BinaryOp
 binaryOperator =
   (choice . map try)

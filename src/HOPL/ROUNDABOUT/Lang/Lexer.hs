@@ -38,7 +38,11 @@ checkedDef =
           "==",
           ">",
           ">=",
-          "->" -- ? What is this
+          "[",
+          "]",
+          "->",
+          "[",
+          "]" -- ? What is this
         ],
       Tok.reservedNames =
         [ "let",
@@ -56,7 +60,9 @@ checkedDef =
           "bool",
           "str",
           "return",
-          "list" -- Decide whether we need to remove later
+          "list",
+          "lookup",
+          "print" -- Decide whether we need to remove later
         ]
     }
 
@@ -83,3 +89,6 @@ reservedOp = Tok.reservedOp checkedLexer
 
 whiteSpace :: Parser ()
 whiteSpace = Tok.whiteSpace checkedLexer
+
+stringLiteral :: Parser String
+stringLiteral = Tok.stringLiteral checkedLexer

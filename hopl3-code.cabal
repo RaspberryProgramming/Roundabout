@@ -40,7 +40,6 @@ library
       HOPL.CALL_BY_REFERENCE.Lang.Parser
       HOPL.CALL_BY_REFERENCE.Lang.Syntax
       HOPL.CALL_BY_REFERENCE.Store
-      HOPL.ROUNDABOUT.Checker
       HOPL.ROUNDABOUT.DataStructures
       HOPL.ROUNDABOUT.Environment
       HOPL.ROUNDABOUT.Interp
@@ -48,8 +47,6 @@ library
       HOPL.ROUNDABOUT.Lang.Lexer
       HOPL.ROUNDABOUT.Lang.Parser
       HOPL.ROUNDABOUT.Lang.Syntax
-      HOPL.ROUNDABOUT.Type
-      HOPL.ROUNDABOUT.TypeEnv
       HOPL.EXPLICIT_REFS.DataStructures
       HOPL.EXPLICIT_REFS.Environment
       HOPL.EXPLICIT_REFS.Interp

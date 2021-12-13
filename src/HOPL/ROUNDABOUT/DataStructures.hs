@@ -33,6 +33,7 @@ data ExpVal
   = NumVal {expvalToNum :: Integer}
   | BoolVal {expvalToBool :: Bool}
   | ProcVal {expvalToProc :: Procedure}
+  | StrVal {expvalToString :: String}
   | ListVal {expvalToList :: [ExpVal]}
   deriving (Eq)
 
@@ -41,6 +42,7 @@ instance Show ExpVal where
   show (BoolVal z) = "(BoolVal " ++ show z ++ ")"
   show (ProcVal f) = "(ProcVal " ++ show f ++ ")"
   show (ListVal vs) = "(ListVal " ++ show vs ++ ")"
+  show (StrVal vs) = "(StrVal " ++ show vs ++ ")"
 
 {- Recursive "data structure" representation for environments -}
 
