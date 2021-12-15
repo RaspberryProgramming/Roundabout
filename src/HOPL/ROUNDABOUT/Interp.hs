@@ -39,6 +39,9 @@ interpWith' ρ σ = fromRight undefined . interpWith ρ σ
 interpWith :: Environment -> Store -> Source -> Either ParseError (IO ExpVal)
 interpWith ρ σ src = flip (`valueOfProgram` ρ) σ <$> parseToplevel src
 
+ioWrap :: Answer -> IO Answer
+ioWrap ans = do return ans
+
 {- semantic reduction of a program -}
 
 valueOfProgram :: Pgm -> Environment -> Store -> IO ExpVal
@@ -86,107 +89,108 @@ valueOf (AddAssExp x exp) ρ σ = do
   let res = NumVal (v+n₁)
   let σ₂ = setref (applyEnv ρ x) res σ₁
   return $ Answer (res) σ₂
-{-valueOf EmptyExp ρ σ = return (Answer ( ListVal [] ) σ)
-valueOf (ListExp exps) ρ σ = do
-  valof n = ret
-    where
-      ret <- valueOf n ρ σ
-  let vsa = map valof exps 
-  let vs = map getVal vsa
-  return (Answer (ListVal vs) σ)
--}
-{-
- -- List constructors
-valueOf EmptyExp ρ σ = Answer ( ListVal [] ) σ
-valueOf (ListExp exps) ρ σ = Answer (ListVal vs) σ
-  where
-  valof n = valueOf n ρ σ
-  vsa = map valof exps 
-  vs = map getVal vsa
--- Variable declarations
--}
+-- valueOf EmptyExp ρ σ = return (Answer ( ListVal [] ) σ)
+valueOf (ListExp []) ρ σ = do
+  return (Answer (ListVal []) σ)
+valueOf (ListExp (exp : exps)) ρ σ = do
+  Answer (v₁) σ₁ <- valueOf (exp) ρ σ
+  -- let vsa = map valof exps 
+  -- let vs = map getVal vsa
+  
+  Answer (ListVal v) σ₂ <- valueOf (ListExp exps) ρ σ₁
+  let vs =  [v₁] ++ v;
+  return (Answer (ListVal vs) σ₂)
+
 valueOf (LetExp x rhs body) ρ σ = do
   Answer v σ₁ <- valueOf rhs ρ σ -- <- extracts from IO layer
   let (addr, σ₂) = newref v σ₁
   let ρ' = extendEnv x addr ρ
   valueOf body ρ' σ₂ -- Already wrapped in IO layer, return wrapps items in IO layer
     
-{-
-valueOf (IfExp exp₁ exp₂ exp₃) ρ σ = valueOf exp' ρ σ₁
-  where
-    Answer q σ₁ = valueOf exp₁ ρ σ
-    exp' = case q of
-      BoolVal True -> exp₂
-      BoolVal False -> exp₃
-valueOf (ProcExp x body) ρ σ = Answer (ProcVal (ClosedProcedure x body ρ)) σ
-valueOf (CallExp rator rand) ρ σ = applyProcedure (expvalToProc f) addr σ₃
-  where
-    Answer f σ₁ = valueOf rator ρ σ
-    Answer v σ₂ = valueOf rand ρ σ₁
-    (addr, σ₃) = newref v σ₂
-valueOf (AssignExp var rhs) ρ σ = Answer rval σ₂
-  where
-    Answer rval σ₁ = valueOf rhs ρ σ
-    σ₂ = setref (applyEnv ρ var) rval σ₁
-valueOf (SequenceExp [] exp') ρ σ = Answer v σ
-  where
-    ans = valueOf exp' ρ σ
-    v = getVal ans
-    σ₁ = getStore ans
+valueOf (IfExp exp₁ exp₂ exp₃) ρ σ = do
+  
+  Answer q σ₁ <- valueOf exp₁ ρ σ
+
+  exp' <- case q of
+      BoolVal True -> return exp₂
+      BoolVal False -> return exp₃
+
+  Answer v₂ σ <- valueOf exp' ρ σ₁
+  return (Answer v₂ σ)
+
+valueOf (ProcExp x body) ρ σ = do
+  return (Answer (ProcVal (ClosedProcedure x body ρ)) σ)
+valueOf (CallExp rator rand) ρ σ = do
+  Answer f σ₁ <- valueOf rator ρ σ
+  Answer v σ₂ <- valueOf rand ρ σ₁
+  let (addr, σ₃) = newref v σ₂
+  applyProcedure (expvalToProc f) addr σ₃
+
+valueOf (AssignExp var rhs) ρ σ = do
+  Answer rval σ₁ <- valueOf rhs ρ σ
+  let σ₂ = setref (applyEnv ρ var) rval σ₁
+  return (Answer rval σ₂)
+
+valueOf (SequenceExp [] exp') ρ σ = do
+  Answer v σ₁ <- valueOf exp' ρ σ
+  return (Answer v σ₁)
+
+valueOf (SequenceExp (exp : exps) exp') ρ σ = do
+  Answer v σ₁ <- valueOf exp ρ σ
+  Answer ret σ₂ <- valueOf (SequenceExp exps exp') ρ σ₁
+  return (Answer ret σ₂)
+    -- retVal = getVal ret
+    -- σ₂ = getStore ret
+valueOf (LoopExp exp₁ exp₂) ρ σ = do
+    Answer expVal σ₁ <- valueOf exp₂ ρ σ
+
+    Answer cont σ₂ <- valueOf exp₁ ρ σ₁
+
+    Answer retVal σ₃ <- case cont of
+      BoolVal True -> valueOf (LoopExp exp₁ exp₂) ρ σ₂
+      BoolVal False -> ioWrap (Answer expVal σ₂)
+
+    return (Answer retVal σ₃)
+
+valueOf (BinaryExp op exp₁ exp₂) ρ σ = do 
+  v <- valueOfBinaryOp op exp₁ exp₂ ρ σ
+  return (Answer(v) σ)
+valueOf (StringExp s) _ σ = do
+  return (Answer (StrVal s) σ)
+valueOf (LookupExp exp₁ exp₂) ρ σ = do
+  Answer (NumVal loc) σ₁ <- valueOf exp₂ ρ σ
+  Answer (ListVal list) σ₂ <- valueOf exp₁ ρ σ
+
+  let v = list !! fromInteger loc
+
+  return (Answer v σ)
     
-valueOf (SequenceExp (exp : exps) exp') ρ σ = Answer retVal σ₁
-  where
-    v = valueOf exp ρ σ
-    σ₁ = getStore v
-    ret = valueOf (SequenceExp exps exp') ρ σ₁
-    retVal = getVal ret
-    σ₂ = getStore ret
+valueOf (PrintExp exp₁) ρ σ = do
+  Answer v σ₁ <- valueOf exp₁ ρ σ
+  print v
+  return (Answer v σ₁)
 
-valueOf (LoopExp exp₁ exp₂) ρ σ = Answer retVal σ₂
-  where
-    expAns = valueOf exp₂ ρ σ
-    σ₁ = getStore expAns
+{-~ Auxiliary function for applying procedure values -}
+applyProcedure :: Procedure -> DenVal -> Store -> IO Answer
+applyProcedure (ClosedProcedure x body ρ) arg σ = do 
+  Answer v₁ σ₁ <- valueOf body (extendEnv x arg ρ) σ
+  return (Answer v₁ σ₁)
+applyProcedure _ _ _ = undefined
 
-    cont = getVal (valueOf exp₁ ρ σ₁)
-
-    ret = case cont of
-      BoolVal True -> valueOf (LoopExp exp₁ exp₂) ρ σ₁
-      BoolVal False -> expAns
+valueOfBinaryOp :: BinaryOp -> Exp -> Exp -> Environment -> Store -> IO ExpVal
+valueOfBinaryOp op exp₁ exp₂ ρ σ = do
+  -- e₁ <- exp₁
+  Answer v₁ σ₁ <- valueOf exp₁ ρ σ
+  Answer v₂ σ₂ <- valueOf exp₂ ρ σ₁
+  let q₁ = expvalToBool v₁
+  let q₂ = expvalToBool v₂
+  let n₁ = expvalToNum v₁
+  let n₂ = expvalToNum v₂
+  return (case op of
+    Equal -> BoolVal (v₁ == v₂)
+    NotEqual -> BoolVal (v₁ /= v₂)
+    Less -> BoolVal (n₁ < n₂)
+    LessEqual -> BoolVal (n₁ <= n₂)
+    Greater -> BoolVal (n₁ > n₂)
+    GreaterEqual -> BoolVal (n₁ >= n₂))
     
-    σ₂ = getStore ret
-    retVal = getVal ret
-
-valueOf (BinaryExp op exp₁ exp₂) ρ σ = Answer(valueOfBinaryOp op exp₁ exp₂ ρ σ) σ
-valueOf (StringExp s) _ σ = Answer (StrVal s) σ
-valueOf (LookupExp exp₁ exp₂) ρ σ = Answer v σ
-  where
-    Answer (NumVal loc) σ₁ = valueOf exp₂ ρ σ
-    Answer (ListVal list) σ₂ = valueOf exp₁ ρ σ
-    -- loc = NumVal (getVal (valueOf exp₂ ρ σ))
-    v = list !! fromInteger loc
-valueOf (PrintExp exp₁) ρ σ = Answer v σ
-  where
-    v = getVal ( valueOf exp₁ ρ σ)
-    x = show v
-    -- show v-}
-
-{- Auxiliary function for applying procedure values -}
-{-applyProcedure :: Procedure -> DenVal -> Store -> Answer
-applyProcedure (ClosedProcedure x body ρ) arg σ = valueOf body (extendEnv x arg ρ) σ
-applyProcedure _ _ _ = undefined-}
-
-{- valueOfBinaryOp :: BinaryOp -> Exp -> Exp -> Environment -> Store -> ExpVal
-valueOfBinaryOp op exp₁ exp₂ ρ σ = case op of
-  Equal -> BoolVal (v₁ == v₂)
-  NotEqual -> BoolVal (v₁ /= v₂)
-  Less -> BoolVal (n₁ < n₂)
-  LessEqual -> BoolVal (n₁ <= n₂)
-  Greater -> BoolVal (n₁ < n₂)
-  GreaterEqual -> BoolVal (n₁ <= n₂)
-  where
-    q₁ = expvalToBool v₁
-    q₂ = expvalToBool v₂
-    n₁ = expvalToNum v₁
-    n₂ = expvalToNum v₂
-    v₁ = getVal (valueOf exp₁ ρ σ)
-    v₂ = getVal (valueOf exp₂ ρ σ) -}
