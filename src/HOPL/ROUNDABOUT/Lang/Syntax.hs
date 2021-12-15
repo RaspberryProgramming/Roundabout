@@ -39,11 +39,9 @@ data Exp
    -- Function definition
   |  ProcExp Id Exp
   |  LoopExp Exp Exp
-  |  EmptyExp
   |  ListExp [Exp]
   |  StringExp String
   | LookupExp Exp Exp
-  | StrLookupExp Exp Exp
  -- | FunctExp Id [Id] Exp
   | AssignExp Id Exp
   | SequenceExp [Exp] Exp

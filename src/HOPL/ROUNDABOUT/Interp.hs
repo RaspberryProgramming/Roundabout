@@ -113,7 +113,7 @@ valueOf (IfExp exp₁ exp₂ exp₃) ρ σ = do
 
   exp' <- case q of
       BoolVal True -> return exp₂
-      BoolVal False -> return exp₃
+      _ -> return exp₃
 
   Answer v₂ σ <- valueOf exp' ρ σ₁
   return (Answer v₂ σ)
@@ -148,7 +148,7 @@ valueOf (LoopExp exp₁ exp₂) ρ σ = do
 
     Answer retVal σ₃ <- case cont of
       BoolVal True -> valueOf (LoopExp exp₁ exp₂) ρ σ₂
-      BoolVal False -> ioWrap (Answer expVal σ₂)
+      _ -> ioWrap (Answer expVal σ₂)
 
     return (Answer retVal σ₃)
 
@@ -159,11 +159,21 @@ valueOf (StringExp s) _ σ = do
   return (Answer (StrVal s) σ)
 valueOf (LookupExp exp₁ exp₂) ρ σ = do
   Answer (NumVal loc) σ₁ <- valueOf exp₂ ρ σ
-  Answer (ListVal list) σ₂ <- valueOf exp₁ ρ σ
+  Answer (val) σ₂ <- valueOf exp₁ ρ σ
 
-  let v = list !! fromInteger loc
+  Answer v _ <- case val of
+    ListVal x -> ioWrap (Answer( x !! fromInteger loc) undefined)
+    StrVal x -> ioWrap (Answer( StrVal [(x !! fromInteger loc)]) undefined)
+    _ -> ioWrap (Answer undefined undefined)
 
   return (Answer v σ)
+
+{-valueOf (StrLookupExp x exp₂) ρ σ = do
+  Answer (NumVal loc) σ₁ <- valueOf exp₂ ρ σ
+  Answer (StrVal str) σ₂ <- valueOf (VarExp x) ρ σ₁
+  let v = take (fromInteger loc) str -- !! fromInteger loc
+
+  return (Answer (StrVal v) σ₁)-}
     
 valueOf (PrintExp exp₁) ρ σ = do
   Answer v σ₁ <- valueOf exp₁ ρ σ
@@ -193,4 +203,3 @@ valueOfBinaryOp op exp₁ exp₂ ρ σ = do
     LessEqual -> BoolVal (n₁ <= n₂)
     Greater -> BoolVal (n₁ > n₂)
     GreaterEqual -> BoolVal (n₁ >= n₂))
-    

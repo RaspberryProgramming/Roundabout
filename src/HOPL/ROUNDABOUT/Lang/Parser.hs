@@ -44,7 +44,8 @@ program = Pgm <$> expression
 expression :: Parser Exp
 expression =
   (choice . map try)
-    [ -- Variable declarations
+    [
+      -- Variable declarations
       LetExp
         <$> (reserved "let" >> identifier)
         <*> (reserved "=" >> expression)
@@ -107,8 +108,6 @@ expression =
      -- FunctExp
       --  <$> (reserved "functionName" >> identifier )
        -- <*> (),
-      EmptyExp
-        <$ reserved "emptylist",
       ListExp
         <$> (reservedOp "[" >> sepBy expression (symbol ",") <* reservedOp "]"),
       StringExp
@@ -116,8 +115,6 @@ expression =
       LookupExp
         <$> (reserved "lookup" >> expression <* reservedOp "[")
         <*> ( expression <* reservedOp "]"),
-      -- StrLookupExp 
-      --  <$> (expression)
       PrintExp
         <$> (reserved "print" <* symbol "(" >> expression <* symbol ")")
     ]
