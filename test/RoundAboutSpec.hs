@@ -28,25 +28,37 @@ spec =
   describe "ROUNDABOUT tests" $ do
     describe "Value tests" $ do
       -- simple arithmetic
-      specify "positive-const" $
-        interp "11" `shouldBe` NumVal 11
-      specify "loop-test" $
-        interp "let x = 0 in let y = 1 in loop <(x,y) in {assign x = +(x,1) return x}" `shouldBe` NumVal 1
-      specify "list-lookup-test" $
-        interp "let x = [5,10,20] in x[1]" `shouldBe` NumVal 10
-      specify "add-test" $
-        interp "let x = 1 in +(x,2)" `shouldBe` NumVal 3
-      specify "diff-test" $
-        interp "let x = 1 in -(2,x)" `shouldBe` NumVal 1
-      specify "mult-test" $
-        interp "let x = 1 in +(x,2)" `shouldBe` NumVal 2
-      specify "div-test" $
-        interp "let x = 4 in +(x,2)" `shouldBe` NumVal 2
-      specify "add-assign-ret-test" $
-        interp "let x = 1 in +=(x,2)" `shouldBe` NumVal 3
-      specify "diff-assign-ret-test" $
-        interp "let x = 1 in -=(2,x)" `shouldBe` NumVal 1
+      specify "positive-const" $ do
+        v <- interp "11"
+        v `shouldBe` NumVal 11
+      specify "loop-test" $ do
+        v <- interp "let x = 0 in let y = 1 in loop <(x,y) in {assign x = +(x,1) return x}"
+        v `shouldBe` NumVal 1
+      specify "list-lookup-test" $ do
+        v <- interp "let x = [5,10,20] in lookup x[1]"
+        v `shouldBe` NumVal 10
+      specify "add-test" $ do
+        v <- interp "let x = 1 in +(x,2)" 
+        v `shouldBe` NumVal 3
+      specify "diff-test" $ do
+        v <- interp "let x = 1 in -(2,x)"
+        v `shouldBe` NumVal 1
+      specify "mult-test" $ do
+        v <- interp "let x = 1 in *(x,2)"
+        v `shouldBe` NumVal 2
+      specify "div-test" $ do
+        v <- interp "let x = 4 in /(x,2)"
+        v `shouldBe` NumVal 2
+      specify "add-assign-ret-test" $ do
+        v <- interp "let x = 1 in {+=(x,2) return x}"
+        v `shouldBe` NumVal 3
+      specify "diff-assign-ret-test" $ do
+        v <- interp "let x = 5 in {-=(x,2) return x}"
+        v `shouldBe` NumVal 3
+      specify "seq-ret-exp-test" $ do
+        v <- interp "let x = 5 in {-=(x,2) return +(x,5)}"
+        v `shouldBe` NumVal 8
   where
     interp = fromRight undefined . interpWith testEnv testStore
-    printInterp = print . interpWith testEnv testStore
+    --printInterp = print . interpWith testEnv testStore
 
