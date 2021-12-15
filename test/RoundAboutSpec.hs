@@ -58,6 +58,42 @@ spec =
       specify "seq-ret-exp-test" $ do
         v <- interp "let x = 5 in {-=(x,2) return +(x,5)}"
         v `shouldBe` NumVal 8
+      specify "lookup-test" $ do
+        v <- interp "let x = 3 in let y = [5,7,8,9,11,12,55] in loop <(x,5) in {+=(x,2) return lookup y[x]}"
+        v `shouldBe` NumVal 12
+      specify "assign-test" $ do
+        v <- interp "let x = 3 in let y = [5,7,8,9,11,12,55] in loop <(x,5) in {assign x = 6 return lookup y[x]}"
+        v `shouldBe` NumVal 55
+      specify "greater-test" $ do
+        v <- interp ">(5,2)"
+        v `shouldBe` BoolVal True
+      specify "greaterEq1-test" $ do
+        v <- interp ">=(5,5)"
+        v `shouldBe` BoolVal True
+      specify "greaterEq2-test" $ do
+        v <- interp ">=(5,2)"
+        v `shouldBe` BoolVal True
+      specify "less-test" $ do
+        v <- interp "<(9999,5)"
+        v `shouldBe` BoolVal False
+      specify "lessEq-test" $ do
+        v <- interp "<=(2,5)"
+        v `shouldBe` BoolVal True
+      specify "equal-test" $ do
+        v <- interp "==(10,20)"
+        v `shouldBe` BoolVal False
+      specify "notequal-test" $ do
+        v <- interp "!=(10,20)"
+        v `shouldBe` BoolVal True
+      specify "strval-test" $ do
+        v <- interp "\"1\""
+        v `shouldBe` StrVal "1"
+      specify "strlookup-test" $ do
+        v <- interp "let x = \"Hello World\" in lookup x[5]"
+        v `shouldBe` StrVal " "
+      specify "nested-loop-test" $ do
+        v <- interp "let x = 1 in let y = 10 in loop ==(x,1) in {loop >(y,5) in {print(y) return -=(y,1)}; assign x = 0 return y}"
+        v `shouldBe` NumVal 5
   where
     interp = fromRight undefined . interpWith testEnv testStore
     --printInterp = print . interpWith testEnv testStore
