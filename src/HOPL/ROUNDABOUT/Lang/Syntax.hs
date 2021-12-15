@@ -37,15 +37,13 @@ data Exp
   | -- Control expressions
     IfExp Exp Exp Exp
    -- Function definition
-  |  ProcExp Id Exp
-  |  LoopExp Exp Exp
-  |  ListExp [Exp]
-  |  StringExp String
+  | ProcExp Id Exp
+  | LoopExp Exp Exp
+  | ListExp [Exp]
+  | StringExp String
   | LookupExp Exp Exp
- -- | FunctExp Id [Id] Exp
   | AssignExp Id Exp
   | SequenceExp [Exp] Exp
- -- | functCallExp Indentifier [Exp]
   | BinaryExp BinaryOp Exp Exp
     -- Function call
   | CallExp Exp Exp
